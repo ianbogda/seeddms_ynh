@@ -40,7 +40,6 @@ CHECK_DOMAINPATH
     final_path=$DESTDIR/seeddms5.1x
 
     sudo rm -rf $final_path
-    sudo mkdir -p $final_path/{www,data/{staging,data,cache}}
 
 # retrieve and extract SeedDMS tarballs
     SEEDDMS_VERSION=$(cat ../conf/app.src | grep SEEDDMS_VERSION | cut -d= -f2)
@@ -82,7 +81,9 @@ CHECK_DOMAINPATH
     src_checksum=$(cat ../conf/app.src | grep PREVIEW_SOURCE_SUM | cut -d= -f2)
     echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
-    sudo tar xvzf /tmp/seeddms-$SEEDDMS_VERSION.tar.gz --directory $final_path/www
+    sudo tar xvzf /tmp/seeddms-$SEEDDMS_VERSION.tar.gz --directory $final_path/
+    sudo mkdir -p $final_path/data/{staging,data,cache}
+
     if [! $(pear list | grep SeedDMS_Core) ]
     then
         sudo pear install /tmp/SeedDMS_Core-$SEEDDMS_VERSION.tgz
@@ -114,11 +115,11 @@ CHECK_DOMAINPATH
     sudo rm /tmp/SeedDMS* /tmp/seeddms-$SEEDDMS_VERSION.tar.gz
 
 # Autoconfig
-    application_file=$final_path/www/conf/settings.xml
+    application_file=$final_path/$SEEDDMS_VERSION/conf/settings.xml
     sudo cp -a ../sources/settings.xml           $application_file
-    sudo cp -a ../sources/create_tables-innodb.sql $final_path/www/install/create_tables-innodb.sql
+    sudo cp -a ../sources/create_tables-innodb.sql $final_path/$SEEDDMS_VERSION/install/create_tables-innodb.sql
 
-    sudo touch $final_path/www/conf/ENABLE_INSTALL_TOOL
+    sudo touch $final_path/$SEEDDMS_VERSION/conf/ENABLE_INSTALL_TOOL
 
     # Set lang => define from install manifest
     case "$lang" in
@@ -154,14 +155,9 @@ CHECK_DOMAINPATH
 
 # Install Nginx configuration file
     nginx_conf_file=/etc/nginx/conf.d/$domain.d/$app.conf
-    sudo cp ../conf/nginx.conf $nginx_conf_file
-    if [ $path = "/" ]; then
-        sudo sed -i "s@ROOTTOCHANGE@@g"          $nginx_conf_file
-    else
-        sudo sed -i "s@ROOTTOCHANGE@$path@g"     $nginx_conf_file
-    fi
+    sudo cp ../conf/nginx.conf                   $nginx_conf_file
     sudo sed -i "s@PATHTOCHANGE@$path@g"         $nginx_conf_file
-    sudo sed -i "s@ALIASTOCHANGE@$final_path/@g" $nginx_conf_file
+    sudo sed -i "s@ALIASTOCHANGE@$final_path/$SEEDDMS_VERSION@g" $nginx_conf_file
     sudo sed -i "s@NAMETOCHANGE@$app@g"          $nginx_conf_file
     sudo chown root:                             $nginx_conf_file
     sudo chmod 644                               $nginx_conf_file
