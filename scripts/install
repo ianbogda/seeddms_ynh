@@ -65,7 +65,7 @@ CHECK_DOMAINPATH
     echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
     # retrieve and extract SeddDMS_Lucene tarball
-    source_url=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Core-$LUCENE_VERSION.tgz/download
+    source_url=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Lucene-$LUCENE_VERSION.tgz/download
     tarball=/tmp/SeedDMS_Lucene-${LUCENE_VERSION}.tgz
     sudo curl -L $source_url > $tarball \
         || ynh_die "Unable to download SeedDMS_Lucene tarball"
@@ -74,7 +74,7 @@ CHECK_DOMAINPATH
     echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
     # retrieve and extract SeedDMS_Preview tarball
-    source_url=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Core-$PREVIEW_VERSION.tgz/download
+    source_url=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Preview-$PREVIEW_VERSION.tgz/download
     tarball=/tmp/SeedDMS_Preview-$PREVIEW_VERSION.tgz
     sudo curl -L $source_url > $tarball \
         || ynh_die "Unable to download SeedDMS_Preview tarball"
