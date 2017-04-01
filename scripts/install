@@ -136,10 +136,12 @@ CHECK_DOMAINPATH
     esac
     ynh_app_setting_set "$app" lang "$lang"
 
-
+    # Define app's data directory
+    DATADIR="/home/yunohost.app/${app}/data"
     sudo sed -i "s@_LANG_@$language@g"          $application_file
     sudo sed -i "s@_APPHTML_@$app@g"            $application_file
     sudo sed -i "s@_APPDIR_@$final_path@g"      $application_file
+    sudo sed -i "s@_DATADIR_@$final_path@g"     $application_file
 
     sudo sed -i "s@_DBC_DBTYPE_@mysql@g"        $application_file
     sudo sed -i "s@_DBC_DBSERVER_@localhost@g"  $application_file
