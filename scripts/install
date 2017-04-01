@@ -18,7 +18,7 @@
     path=$YNH_APP_ARG_PATH
     is_public=$YNH_APP_ARG_IS_PUBLIC
     lang=$YNH_APP_ARG_LANG
-    dayofweek=$YNH_APP_ARG_DAYOFWEEK
+    firstDayOfWeek=$YNH_APP_ARG_FIRSTDAYOFWEEK
 
 # Correct path using .fonctions
     CHECK_PATH
@@ -150,7 +150,7 @@
 
     # Define app's data directory
     sudo sed -i "s@_LANG_@$language@g"          $application_file
-    sudo sed -i "s@_DAY_@$dayofweek@g"          $application_file
+    sudo sed -i "s@_DAY_@$firstDayOfWeek@g"     $application_file
     sudo sed -i "s@_APPHTML_@$app@g"            $application_file
     sudo sed -i "s@_APPDIR_@$final_path@g"      $application_file
     sudo sed -i "s@_DATADIR_@$data_path@g"      $application_file
