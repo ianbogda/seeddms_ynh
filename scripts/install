@@ -57,7 +57,7 @@ CHECK_DOMAINPATH
 
     # retrieve and extract SeedDMS_Core tarball
     source_url=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Core-$SEEDDMS_VERSION.tgz/download
-    tarball=/tmp/SeedDMS_Core-$CORE_VERSION.tgz
+    tarball=/tmp/SeedDMS_Core-$SEEDDMS_VERSION.tgz
     sudo curl -L $source_url > $tarball \
         || ynh_die "Unable to download SeedDMS_Core tarball"
 
