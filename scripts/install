@@ -93,18 +93,10 @@
 
     sudo tar xvzf /tmp/seeddms-$SEEDDMS_VERSION.tar.gz --directory $final_path/
 
-    if [! $(pear list | grep SeedDMS_Core) ]
-    then
-        sudo pear install /tmp/SeedDMS_Core-$SEEDDMS_VERSION.tgz
-    fi
-    if [! $(pear list | grep SeedDMS_Lucene) ]
-    then
-        sudo pear install /tmp/SeedDMS_Lucene-$LUCENE_VERSION.tgz
-    fi
-    if [! $(pear list | grep SeedDMS_Preview) ]
-    then
-        sudo pear install /tmp/SeedDMS_Preview-$PREVIEW_VERSION.tgz
-    fi
+    sudo pear install /tmp/SeedDMS_Core-$SEEDDMS_VERSION.tgz
+    sudo pear install /tmp/SeedDMS_Lucene-$LUCENE_VERSION.tgz
+    sudo pear install /tmp/SeedDMS_Preview-$PREVIEW_VERSION.tgz
+
     if [! $(pear list | grep Log) ]
     then
         sudo pear install Log
@@ -118,6 +110,11 @@
         sudo pear install zend/zend
     fi
     if [! $(pear list | grep HTTP_WebDAV_Server) ]
+    then
+        sudo pear install HTTP_WebDAV_Server-1.0.0RC8
+    fi
+
+    if [! $(pear list | grep Mail) ]
     then
         sudo pear install HTTP_WebDAV_Server-1.0.0RC8
     fi
@@ -167,16 +164,16 @@
     sudo chown -R www-data:www-data $final_path $data_path
 
 # Install Nginx configuration file
+    alias="$final_path/seeddms-$SEEDDMS_VERSION/"
     nginx_conf_file=/etc/nginx/conf.d/$domain.d/$app.conf
     sudo cp ../conf/nginx.conf                  $nginx_conf_file
     sudo sed -i "s@PATHTOCHANGE@$path@g"        $nginx_conf_file
-    sudo sed -i "s@ALIASTOCHANGE@$final_path@g" $nginx_conf_file
+    sudo sed -i "s@ALIASTOCHANGE@$alias@g"      $nginx_conf_file
     sudo sed -i "s@NAMETOCHANGE@$app@g"         $nginx_conf_file
     sudo chown root:                            $nginx_conf_file
     sudo chmod 644                              $nginx_conf_file
 
     finalphpconf=/etc/php5/fpm/pool.d/$app.conf
-    alias="$final_path/seeddms-$SEEDDMS_VERSION/"
     sudo cp ../conf/php-fpm.conf                $finalphpconf
     sudo sed -i "s@YNH_WWW_APP@$app@g"          $finalphpconf
     sudo sed -i "s@YNH_WWW_ALIAS@$alias@g"      $finalphpconf
