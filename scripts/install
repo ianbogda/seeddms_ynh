@@ -103,7 +103,6 @@ CHECK_DOMAINPATH
             language=en_GB
 	esac
 	ynh_app_setting_set "$app" lang "$lang"
-	ynh_app_setting_set "$app" ldap "$ldap"
 
 
 	sudo sed -i "s@localhost@$domain@g"         $application_file
