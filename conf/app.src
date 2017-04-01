@@ -1,15 +1,15 @@
 SEEDDMS_VERSION=5.1.1
-LUCENE_VERSION=".1.10
+LUCENE_VERSION=1.1.10
 PREVIEW_VERSION=1.2.2
 
-SEEDDMS_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-${SEEDDMS_VERSION}/seeddms-${SEEDDMS_VERSION}.tar.gz/download
+SEEDDMS_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/seeddms-$SEEDDMS_VERSION.tar.gz/download
 SEEDDMS_SOURCE_SUM=373214a93a48bb2586d1756a1c2e6dd3
 
-CORE_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-${SEEDDMS_VERSION}/SeedDMS_Core-${SEEDDMS_VERSION}.tgz/download
+CORE_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION}/SeedDMS_Core-$SEEDDMS_VERSION.tgz/download
 CORE_SOURCE_SUM=0d96cf8ec07dc868d25f47eeab4bc2e6
 
-LUCENE_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-${SEEDDMS_VERSION}/SeedDMS_Core-${LUCENE_VERSION}.tgz/download
+LUCENE_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Core-$LUCENE_VERSION.tgz/download
 LUCENE_SOURCE_SUM=757023530d668980bbe8779ecf57fff5
 
-PREVIEW_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-${SEEDDMS_VERSION}/SeedDMS_Core-${PREVIEW_VERSION}.tgz/download
+PREVIEW_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Core-$PREVIEW_VERSION.tgz/download
 PREVIEW_SOURCE_SUM=b4b229e67e48684303c5c06e630beb35
