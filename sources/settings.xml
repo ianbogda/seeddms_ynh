@@ -92,7 +92,7 @@
     -->
     <server
       rootDir = "_APPDIR_"
-      httpRoot = "/_APPHTML_"
+      httpRoot = "/_APPHTML_/"
       contentDir = "_APPDIR_/"
       stagingDir = "_DATADIR_/data/staging/"
       luceneDir = "_DATADIR_/data/lucene/"

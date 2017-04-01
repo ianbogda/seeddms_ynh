@@ -176,7 +176,7 @@
     sudo chmod 644                              $nginx_conf_file
 
     finalphpconf=/etc/php5/fpm/pool.d/$app.conf
-    alias="$final_path/seeddms-$SEEDDMS_VERSION"
+    alias="$final_path/seeddms-$SEEDDMS_VERSION/"
     sudo cp ../conf/php-fpm.conf                $finalphpconf
     sudo sed -i "s@YNH_WWW_APP@$app@g"          $finalphpconf
     sudo sed -i "s@YNH_WWW_ALIAS@$alias@g"        $finalphpconf
