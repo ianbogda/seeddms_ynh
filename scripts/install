@@ -47,7 +47,8 @@ CHECK_DOMAINPATH
 	LUCENE_VERSION=$(cat ../conf/app.src  | grep LUCENE_VERSION  | cut -d= -f2)
 	PREVIEW_VERSION=$(cat ../conf/app.src | grep PREVIEW_VERSION | cut -d= -f2)
 
-	source_url=$(cat ../conf/app.src | grep SEEDDMS_SOURCE_URL | cut -d= -f2)
+	source_url=$(cat ../conf/app.src | grep SEEDDMS_SOURCE_URL | cut -d= -f2) \
+    	| sed -i 's@SEEDDMS_VERSION@$SEEDDMS_VERSION@g'
     tarball="/tmp/seeddms-${SEEDDMS_VERSION}.tar.gz"
     sudo curl -L $source_url > $tarball  \
         || ynh_die "Unable to download SeedDMS tarball"
@@ -56,7 +57,9 @@ CHECK_DOMAINPATH
     echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
     # retrieve and extract SeedDMS_Core tarball
-    source_url=$(cat ../conf/app.src    | grep CORE_SOURCE_URL    | cut -d= -f2)
+    source_url=$(cat ../conf/app.src    | grep CORE_SOURCE_URL    | cut -d= -f2) \
+    	| sed -i 's@SEEDDMS_VERSION@$SEEDDMS_VERSION@g' \
+    	| sed -i 's@CORE_SOURCE_URL@$CORE_SOURCE_URL@g'
     tarball="/tmp/SeedDMS_Core-${CORE_VERSION}.tgz"
     sudo curl -L "$source_url" > "$tarball" \
         || ynh_die "Unable to download SeedDMS_Core tarball"
@@ -65,7 +68,9 @@ CHECK_DOMAINPATH
     echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
     # retrieve and extract SeddDMS_Lucene tarball
-    source_url=$(cat ../conf/app.src  | grep LUCENE_SOURCE_URL  | cut -d= -f2)
+    source_url=$(cat ../conf/app.src  | grep LUCENE_SOURCE_URL  | cut -d= -f2) \
+    	| sed -i 's@SEEDDMS_VERSION@$SEEDDMS_VERSION@g' \
+    	| sed -i 's@LUCENE_SOURCE_URL@$LUCENE_SOURCE_URL@g'    	
     tarball="/tmp/SeedDMS_Lucene-${LUCENE_VERSION}.tgz"
     sudo curl -L "$source_url" > "$tarball" \
         || ynh_die "Unable to download SeedDMS_Lucene tarball"
@@ -74,7 +79,9 @@ CHECK_DOMAINPATH
     echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
     # retrieve and extract SeedDMS_Preview tarball
-    source_url=$(cat ../conf/app.src | grep PREVIEW_SOURCE_URL | cut -d= -f2)
+    source_url=$(cat ../conf/app.src | grep PREVIEW_SOURCE_URL | cut -d= -f2) \
+    	| sed -i 's@SEEDDMS_VERSION@$SEEDDMS_VERSION@g' \
+    	| sed -i 's@PREVIEW_SOURCE_URL@$PREVIEW_SOURCE_URL@g'
     tarball="/tmp/SeedDMS_Preview-${PREVIEW_VERSION}.tgz"
     sudo curl -L "$source_url" > "$tarball" \
         || ynh_die "Unable to download SeedDMS_Preview tarball"
