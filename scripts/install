@@ -84,7 +84,7 @@ CHECK_DOMAINPATH
 
     sudo tar xvzf /tmp/seeddms-$SEEDDMS_VERSION.tar.gz --directory $final_path/www
     sudo pear install /tmp/SeedDMS_Core-$SEEDDMS_VERSION.tgz
-    sudo pear install /tmp/seedDMS_Lucene-$LUCENE_VERSION.tgz
+    sudo pear install /tmp/SeedDMS_Lucene-$LUCENE_VERSION.tgz
     sudo pear install /tmp/SeedDMS_Preview-$PREVIEW_VERSION.tgz
     sudo pear install Log
     sudo pear channel-discover pear.dotkernel.com/zf1/svn
