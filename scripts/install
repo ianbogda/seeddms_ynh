@@ -49,7 +49,7 @@
     ynh_package_is_installed "imagemagick"   || ynh_package_install "imagemagick"
     ynh_package_is_installed "php5-gd"       || ynh_package_install "php5-gd"
     ynh_package_is_installed "php5-mysql"    || ynh_package_install "php5-mysql"
-    ynh_package_is_installed "php5-pear"     || ynh_package_install "php5-pear"
+    ynh_package_is_installed "php-pear"      || ynh_package_install "php-pear"
     ynh_package_is_installed "poppler-utils" || ynh_package_install "poppler-utils"
     ynh_package_is_installed "catdoc"        || ynh_package_install "catdoc"
     ynh_package_is_installed "curl"          || ynh_package_install "curl"
