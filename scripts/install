@@ -2,7 +2,8 @@
 
 # Exit on command errors and treat unset variables as an error
 # It also activate set -eu
-	source ../conf/app.src
+
+
 	source _common.sh
 	TRAP_ON
 
@@ -42,46 +43,54 @@ CHECK_DOMAINPATH
 	sudo mkdir -p $final_path/{www,data/{staging,data,cache}}
 
 # retrieve and extract SeedDMS tarballs
-    sd_tarball="${DESTDIR}/seeddms-${SEEDDMS_VERSION}.tar.gz"
-    sudo curl -L "$SEEDDMS_SOURCE_URL" > "$sd_tarball"  \
+	SEEDDMS_VERSION=$(cat ../conf/app.src | grep SEEDDMS_VERSION | cut -d= -f2)
+	LUCENE_VERSION=$(cat ../conf/app.src  | grep LUCENE_VERSION  | cut -d= -f2)
+	PREVIEW_VERSION=$(cat ../conf/app.src | grep PREVIEW_VERSION | cut -d= -f2)
+
+	source_url=$(cat ../conf/app.src | grep SEEDDMS_SOURCE_URL | cut -d= -f2)
+    tarball="/tmp/seeddms-${version}.tar.gz"
+    sudo curl -L "$source_url" > "$tarball"  \
         || ynh_die "Unable to download SeedDMS tarball"
 
     src_checksum=$(cat ../conf/app.src | grep SEEDDMS_SOURCE_SUM | cut -d= -f2)
-    echo "$src_checksum $sd_tarball" | md5sum -c --status || ynh_die "Corrupt source"
+    echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
     # retrieve and extract SeedDMS_Core tarball
-    sd_tarball="${DESTDIR}/SeedDMS_Core-${CORE_VERSION}.tgz"
-    sudo curl -L "$CORE_SOURCE_URL" > "$sd_tarball" \
+    source_url=$(cat ../conf/app.src    | grep CORE_SOURCE_URL    | cut -d= -f2)
+    tarball="/tmp/SeedDMS_Core-${CORE_VERSION}.tgz"
+    sudo curl -L "$source_url" > "$tarball" \
         || ynh_die "Unable to download SeedDMS_Core tarball"
 
     src_checksum=$(cat ../conf/app.src | grep CORE_SOURCE_SUM | cut -d= -f2)
-    echo "$src_checksum $sd_tarball" | md5sum -c --status || ynh_die "Corrupt source"
+    echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
     # retrieve and extract SeddDMS_Lucene tarball
-    sd_tarball="${DESTDIR}/SeedDMS_Lucene-${LUCENE_VERSION}.tgz"
-    sudo curl -L "$LUCENE_SOURCE_URL" > "$sd_tarball" \
+    source_url=$(cat ../conf/app.src  | grep LUCENE_SOURCE_URL  | cut -d= -f2)
+    tarball="/tmp/SeedDMS_Lucene-${LUCENE_VERSION}.tgz"
+    sudo curl -L "$source_url" > "$tarball" \
         || ynh_die "Unable to download SeedDMS_Lucene tarball"
 
     src_checksum=$(cat ../conf/app.src | grep LUCENE_SOURCE_SUM | cut -d= -f2)
-    echo "$src_checksum $sd_tarball" | md5sum -c --status || ynh_die "Corrupt source"
+    echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
     # retrieve and extract SeedDMS_Preview tarball
-    sd_tarball="${DESTDIR}/SeedDMS_Preview-${PREVIEW_VERSION}.tgz"
-    sudo curl -L "$PREVIEW_SOURCE_URL" > "$sd_tarball" \
+    source_url=$(cat ../conf/app.src | grep PREVIEW_SOURCE_URL | cut -d= -f2)
+    tarball="/tmp/SeedDMS_Preview-${PREVIEW_VERSION}.tgz"
+    sudo curl -L "$source_url" > "$tarball" \
         || ynh_die "Unable to download SeedDMS_Preview tarball"
 
     src_checksum=$(cat ../conf/app.src | grep PREVIEW_SOURCE_SUM | cut -d= -f2)
-    echo "$src_checksum $sd_tarball" | md5sum -c --status || ynh_die "Corrupt source"
+    echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
-    sudo tar xvzf seeddms-$SEEDDMS_VERSION.tar.gz --directory $final_path/www
-    sudo pear install SeedDMS_Core-$SEEDDMS_VERSION.tgz
-    sudo pear install seedDMS_Lucene-$LUCENE_VERSION.tgz
-    sudo pear install SeedDMS_Preview-$PREVIEW_VERSION.tgz
+    sudo tar xvzf /tmp/seeddms-$SEEDDMS_VERSION.tar.gz --directory $final_path/www
+    sudo pear install /tmp/SeedDMS_Core-$SEEDDMS_VERSION.tgz
+    sudo pear install /tmp/seedDMS_Lucene-$LUCENE_VERSION.tgz
+    sudo pear install /tmp/SeedDMS_Preview-$PREVIEW_VERSION.tgz
     sudo pear install Log
     sudo pear channel-discover pear.dotkernel.com/zf1/svn
     sudo pear install zend/zend
     sudo pear install HTTP_WebDAV_Server-1.0.0RC8
-    sudo rm SeedDMS* seeddms-$SEEDDMS_VERSION.tar.gz
+    sudo rm /tmp/SeedDMS* /tmp/seeddms-$SEEDDMS_VERSION.tar.gz
 
 # Autoconfig
 	application_file=$final_path/www/conf/settings.xml
