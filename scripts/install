@@ -49,7 +49,7 @@ CHECK_DOMAINPATH
 
 	source_url=$(cat ../conf/app.src | grep SEEDDMS_SOURCE_URL | cut -d= -f2)
     tarball="/tmp/seeddms-${SEEDDMS_VERSION}.tar.gz"
-    sudo curl -L "$source_url" > "$tarball"  \
+    sudo curl -L $source_url > $tarball  \
         || ynh_die "Unable to download SeedDMS tarball"
 
     src_checksum=$(cat ../conf/app.src | grep SEEDDMS_SOURCE_SUM | cut -d= -f2)
