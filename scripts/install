@@ -115,8 +115,8 @@ CHECK_DOMAINPATH
 
 # Autoconfig
 	application_file=$final_path/www/conf/settings.xml
-	sudo cp -a ../configs/settings.xml           $application_file
-	sudo cp -a ../configs/create_tables-innodb.sql $final_path/www/install/create_tables-innodb.sql
+	sudo cp -a ../conf/settings.xml           $application_file
+	sudo cp -a ../conf/create_tables-innodb.sql $final_path/www/install/create_tables-innodb.sql
 
 	sudo touch $final_path/www/conf/ENABLE_INSTALL_TOOL
 
