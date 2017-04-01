@@ -109,7 +109,7 @@
     then
         sudo pear install Log
     fi
-    if [! $(pear list -c | grep Zend) ]
+    if [! $(pear list -a | grep Zend) ]
     then
         sudo pear channel-discover pear.dotkernel.com/zf1/svn
     fi

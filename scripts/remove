@@ -39,7 +39,7 @@ SECURE_REMOVE () {      # Suppression de dossier avec vérification des variable
         then
                 if [ -e "$chaine" ]; then
                         echo "Delete directory $chaine"
-                        sudo rm -r "$chaine"
+                        sudo rm -rf "$chaine"
                 fi
                 return 0
         else
