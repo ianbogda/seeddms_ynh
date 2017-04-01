@@ -1,0 +1,157 @@
+#!/bin/bash
+
+# Exit on command errors and treat unset variables as an error
+# It also activate set -eu
+	source _common.sh
+	TRAP_ON
+
+# Initial data
+	app=$YNH_APP_INSTANCE_NAME
+
+# Source app helpers
+	source /usr/share/yunohost/helpers
+
+# Retrieve arguments
+	domain=$YNH_APP_ARG_DOMAIN
+	path=$YNH_APP_ARG_PATH
+	is_public=$YNH_APP_ARG_IS_PUBLIC
+	password=$YNH_APP_ARG_PASSWORD
+	ldap=$YNH_APP_ARG_LDAP
+	lang=$YNH_APP_ARG_LANG
+
+# Correct path using .fonctions
+CHECK_PATH
+
+# Check domain/path availability using .fonctions
+CHECK_DOMAINPATH
+
+# Use 'seeddms' as database name and user
+	dbuser=$app
+	dbname=$app
+	dbpass=$(ynh_string_random)
+
+# Initialize database and store mysql password for upgrade
+	ynh_mysql_create_db "$dbname" "$dbuser" "$dbpass"
+	ynh_app_setting_set "$app" mysqlpwd "$dbpass"
+
+# Create the final path and subtree
+	CHECK_FINALPATH
+	final_path=/var/www/$app/seeddms5.1x
+
+	sudo rm -rf $final_path
+	sudo mkdir -p $final_path/{www,data/{staging,data,cache}}
+
+# retrieve and extract SeedDMS tarballs
+    sd_tarball="${DESTDIR}/seeddms-${SEEDDMS_VERSION}.tar.gz"
+    sudo curl -L "$SEEDDMS_SOURCE_URL" > "$sd_tarball"  \
+        || ynh_die "Unable to download SeedDMS tarball"
+
+    src_checksum=$(cat ../conf/app.src | grep SEEDDMS_SOURCE_SUM | cut -d= -f2)
+    echo "$src_checksum $sd_tarball" | md5sum -c --status || ynh_die "Corrupt source"
+
+    # retrieve and extract SeedDMS_Core tarball
+    sd_tarball="${DESTDIR}/SeedDMS_Core-${CORE_VERSION}.tgz"
+    sudo curl -L "$CORE_SOURCE_URL" > "$sd_tarball" \
+        || ynh_die "Unable to download SeedDMS_Core tarball"
+
+    src_checksum=$(cat ../conf/app.src | grep CORE_SOURCE_SUM | cut -d= -f2)
+    echo "$src_checksum $sd_tarball" | md5sum -c --status || ynh_die "Corrupt source"
+
+    # retrieve and extract SeddDMS_Lucene tarball
+    sd_tarball="${DESTDIR}/SeedDMS_Lucene-${LUCENE_VERSION}.tgz"
+    sudo curl -L "$LUCENE_SOURCE_URL" > "$sd_tarball" \
+        || ynh_die "Unable to download SeedDMS_Lucene tarball"
+
+    src_checksum=$(cat ../conf/app.src | grep LUCENE_SOURCE_SUM | cut -d= -f2)
+    echo "$src_checksum $sd_tarball" | md5sum -c --status || ynh_die "Corrupt source"
+
+    # retrieve and extract SeedDMS_Preview tarball
+    sd_tarball="${DESTDIR}/SeedDMS_Preview-${PREVIEW_VERSION}.tgz"
+    sudo curl -L "$PREVIEW_SOURCE_URL" > "$sd_tarball" \
+        || ynh_die "Unable to download SeedDMS_Preview tarball"
+
+    src_checksum=$(cat ../conf/app.src | grep PREVIEW_SOURCE_SUM | cut -d= -f2)
+    echo "$src_checksum $sd_tarball" | md5sum -c --status || ynh_die "Corrupt source"
+
+    sudo tar xvzf seeddms-$SEEDDMS_VERSION.tar.gz --directory $final_path/www
+    sudo pear install SeedDMS_Core-$SEEDDMS_VERSION.tgz
+    sudo pear install seedDMS_Lucene-$LUCENE_VERSION.tgz
+    sudo pear install SeedDMS_Preview-$PREVIEW_VERSION.tgz
+    sudo pear install Log
+    sudo pear channel-discover pear.dotkernel.com/zf1/svn
+    sudo pear install zend/zend
+    sudo pear install HTTP_WebDAV_Server-1.0.0RC8
+    sudo rm SeedDMS* seeddms-$SEEDDMS_VERSION.tar.gz
+
+# Autoconfig
+	application_file=$final_path/www/conf/settings.xml
+	sudo cp -a ../configs/settings.xml           $application_file
+	sudo cp -a ../configs/create_tables-innodb.sql $final_path/www/install/create_tables-innodb.sql
+
+	sudo touch $final_path/www/conf/ENABLE_INSTALL_TOOL
+
+	# Set lang => define from install manifest
+	case "$lang" in
+        Francais)
+            lang="fr"
+            language="fr_FR"
+            ;;
+        English)
+            lang="en"
+            language="en_GB"
+            ;;
+        *)
+            lang="en"
+            language=en_GB
+	esac
+	ynh_app_setting_set "$app" lang "$lang"
+	ynh_app_setting_set "$app" ldap "$ldap"
+
+
+	sudo sed -i "s@localhost@$domain@g"         $application_file
+	sudo sed -i "s@MYSQLUSER@$dbuser@g"         $application_file
+	sudo sed -i "s@MYSQLPASSWORD@$dbpass@g"     $application_file
+	sudo sed -i "s@LANGTOCHANGE@$language@g"    $application_file
+	sudo sed -i "s@FINALPATH@$final_path@g"     $application_file
+
+	sudo sed -i "s@_DBC_DBTYPE_@mysql@g"        $application_file
+	sudo sed -i "s@_DBC_DBSERVER_@localhost@g"  $application_file
+	sudo sed -i "s@_DBC_DBNAME_@$dbname@g"      $application_file
+	sudo sed -i "s@_DBC_DBUSER_@$dbuser@g"      $application_file
+	sudo sed -i "s@_DBC_DBPASS_@$dbpass@g"      $application_file
+
+# Set permissions to seeddms directory
+	sudo find $final_path/. -type d -exec chmod 755 {} \;
+	sudo find $final_path/. -type f -exec chmod 644 {} \;
+	sudo chown -R www-data:www-data $final_path
+
+# Install Nginx configuration file
+	nginx_conf_file=/etc/nginx/conf.d/$domain.d/$app.conf
+	sudo cp ../conf/nginx.conf $nginx_conf_file
+	if [ $path = "/" ]; then
+	    sudo sed -i "s@ROOTTOCHANGE@@g"          $nginx_conf_file
+	else
+	    sudo sed -i "s@ROOTTOCHANGE@$path@g"     $nginx_conf_file
+	fi
+        sudo sed -i "s@PATHTOCHANGE@$path@g"     $nginx_conf_file
+	sudo sed -i "s@ALIASTOCHANGE@$final_path/@g" $nginx_conf_file
+	sudo sed -i "s@NAMETOCHANGE@$app@g"          $nginx_conf_file
+	sudo chown root:                             $nginx_conf_file
+	sudo chmod 644                               $nginx_conf_file
+
+	finalphpconf=/etc/php5/fpm/pool.d/$app.conf
+	sudo cp ../conf/php-fpm.conf        $finalphpconf
+	sudo sed -i "s@NAMETOCHANGE@$app@g" $finalphpconf
+	sudo chown root:                    $finalphpconf
+	sudo chmod 644                      $finalphpconf
+
+# Make app public if necessary
+	ynh_app_setting_set "$app" is_public "$is_public"
+	if [ "$is_public" = "Yes" ];
+	then
+		ynh_app_setting_set "$app" skipped_uris "/"
+	fi
+
+# Reload services
+	sudo service php5-fpm reload
+	sudo service nginx reload
