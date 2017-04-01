@@ -38,7 +38,7 @@
 # Create the final path and subtree
     CHECK_FINALPATH
     DESTDIR=/var/www/$app
-    final_path=s/var/www/$app/seeddms5.1x
+    final_path=/var/www/$app/seeddms5.1x
     data_path=/home/yunohost.app/$app
 
     sudo mkdir -p $final_path
