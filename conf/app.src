@@ -5,7 +5,7 @@ PREVIEW_VERSION=1.2.2
 SEEDDMS_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/seeddms-$SEEDDMS_VERSION.tar.gz/download
 SEEDDMS_SOURCE_SUM=373214a93a48bb2586d1756a1c2e6dd3
 
-CORE_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION}/SeedDMS_Core-$SEEDDMS_VERSION.tgz/download
+CORE_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Core-$SEEDDMS_VERSION.tgz/download
 CORE_SOURCE_SUM=0d96cf8ec07dc868d25f47eeab4bc2e6
 
 LUCENE_SOURCE_URL=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Core-$LUCENE_VERSION.tgz/download
