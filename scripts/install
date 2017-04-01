@@ -114,7 +114,7 @@ CHECK_DOMAINPATH
     sudo rm /tmp/SeedDMS* /tmp/seeddms-$SEEDDMS_VERSION.tar.gz
 
 # Autoconfig
-    application_file=$final_path/$SEEDDMS_VERSION/conf/settings.xml
+    application_file=$final_path/seeddms-$SEEDDMS_VERSION/conf/settings.xml
     sudo cp -a ../sources/settings.xml           $application_file
     sudo cp -a ../sources/create_tables-innodb.sql $final_path/$SEEDDMS_VERSION/install/create_tables-innodb.sql
 
