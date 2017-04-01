@@ -38,8 +38,8 @@
 # Create the final path and subtree
     CHECK_FINALPATH
     DESTDIR=/var/www/$app
-    final_path=/var/www/$app/seeddms5.1x
-    data_path=/home/yunohost.app/$app
+    final_path=/var/www/$app/seeddms5.0x
+    data_path=/home/yunohost.app/$app/data
 
     sudo mkdir -p $final_path
     sudo mkdir -p $data_path/{staging,data,cache}

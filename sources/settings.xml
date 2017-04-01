@@ -93,15 +93,15 @@
     <server
       rootDir = "_APPDIR_"
       httpRoot = "/_APPHTML_/"
-      contentDir = "_APPDIR_/"
-      stagingDir = "_DATADIR_/data/staging/"
-      luceneDir = "_DATADIR_/data/lucene/"
+      contentDir = "_DATADIR_/"
+      stagingDir = "_DATADIR_/staging/"
+      luceneDir = "_DATADIR_/lucene/"
       logFileEnable = "true"
       logFileRotation = "d"
       enableLargeFileUpload = "true"
       partitionSize = "2000000"
       dropFolderDir = ""
-      cacheDir = "_DATADIR_/data/cache/"
+      cacheDir = "_DATADIR_/cache/"
     />
     <!--
        - enableGuestLogin: If you want anybody to login as guest, set the following line to true
