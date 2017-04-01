@@ -34,7 +34,8 @@ CHECK_DOMAINPATH
 
 # Create the final path and subtree
 	CHECK_FINALPATH
-	final_path=/var/www/$app/seeddms5.1x
+	DESTDIR=/var/www/$app
+	final_path=$DESTDIR/seeddms5.1x
 
 	sudo rm -rf $final_path
 	sudo mkdir -p $final_path/{www,data/{staging,data,cache}}
