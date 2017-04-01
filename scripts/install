@@ -39,7 +39,7 @@ CHECK_DOMAINPATH
     DESTDIR=/var/www/$app
     final_path=$DESTDIR/seeddms5.1x
 
-    sudo rm -rf $final_path
+    sudo mkdir -p $final_path/data/{staging,data,cache}
 
 # retrieve and extract SeedDMS tarballs
     SEEDDMS_VERSION=$(cat ../conf/app.src | grep SEEDDMS_VERSION | cut -d= -f2)
@@ -82,7 +82,6 @@ CHECK_DOMAINPATH
     echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
     sudo tar xvzf /tmp/seeddms-$SEEDDMS_VERSION.tar.gz --directory $final_path/
-    sudo mkdir -p $final_path/data/{staging,data,cache}
 
     if [! $(pear list | grep SeedDMS_Core) ]
     then
@@ -157,7 +156,7 @@ CHECK_DOMAINPATH
     nginx_conf_file=/etc/nginx/conf.d/$domain.d/$app.conf
     sudo cp ../conf/nginx.conf                   $nginx_conf_file
     sudo sed -i "s@PATHTOCHANGE@$path@g"         $nginx_conf_file
-    sudo sed -i "s@ALIASTOCHANGE@$final_path/$SEEDDMS_VERSION@g" $nginx_conf_file
+    sudo sed -i "s@ALIASTOCHANGE@$final_path@g"  $nginx_conf_file
     sudo sed -i "s@NAMETOCHANGE@$app@g"          $nginx_conf_file
     sudo chown root:                             $nginx_conf_file
     sudo chmod 644                               $nginx_conf_file
