@@ -21,7 +21,7 @@ REMOVE_FPM_CONF () {    # Suppression de la configuration du pool php-fpm
 }
 
 SECURE_REMOVE () {      # Suppression de dossier avec vérification des variables
-        chaine="$1"     # L'argument doit être donné entre quotes simple '', pour éviter d'interpréter les variables.
+        chaine="/var/www/$app"
         no_var=0
         while (echo "$chaine" | grep -q '\$')   # Boucle tant qu'il y a des $ dans la chaine
         do
@@ -67,7 +67,7 @@ REMOVE_BDD () { # Suppression de la base de donnée et de l'utilisateur associé
 	REMOVE_BDD "$app"
 
 # Delete app directory and configurations using secure remove
-	SECURE_REMOVE	'/var/www/$app'
+	SECURE_REMOVE
 	REMOVE_NGINX_CONF
 	REMOVE_FPM_CONF
 

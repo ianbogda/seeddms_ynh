@@ -2,7 +2,7 @@
 
 # Exit on command errors and treat unset variables as an error
 # It also activate set -eu
-
+    set -eu
 
     source _common.sh
     TRAP_ON
@@ -18,12 +18,13 @@
     path=$YNH_APP_ARG_PATH
     is_public=$YNH_APP_ARG_IS_PUBLIC
     lang=$YNH_APP_ARG_LANG
+    dayofweek=$YNH_APP_ARG_DAYOFWEEK
 
 # Correct path using .fonctions
-CHECK_PATH
+    CHECK_PATH
 
 # Check domain/path availability using .fonctions
-CHECK_DOMAINPATH
+    CHECK_DOMAINPATH
 
 # Use 'seeddms' as database name and user
     dbuser=$app
@@ -37,9 +38,21 @@ CHECK_DOMAINPATH
 # Create the final path and subtree
     CHECK_FINALPATH
     DESTDIR=/var/www/$app
-    final_path=$DESTDIR/seeddms5.1x
+    final_path=s/var/www/$app/seeddms5.1x
+    data_path=/home/yunohost.app/$app
 
-    sudo mkdir -p $final_path/data/{staging,data,cache}
+    sudo mkdir -p $final_path
+    sudo mkdir -p $data_path/{staging,data,cache}
+
+# add required packages
+    ynh_package_is_installed "libpng12-dev"  || ynh_package_install "libpng12-dev"
+    ynh_package_is_installed "imagemagick"   || ynh_package_install "imagemagick"
+    ynh_package_is_installed "php5-gd"       || ynh_package_install "php5-gd"
+    ynh_package_is_installed "php5-mysql"    || ynh_package_install "php5-mysql"
+    ynh_package_is_installed "php5-pear"     || ynh_package_install "php5-pear"
+    ynh_package_is_installed "poppler-utils" || ynh_package_install "poppler-utils"
+    ynh_package_is_installed "catdoc"        || ynh_package_install "catdoc"
+    ynh_package_is_installed "curl"          || ynh_package_install "curl"
 
 # retrieve and extract SeedDMS tarballs
     SEEDDMS_VERSION=$(cat ../conf/app.src | grep SEEDDMS_VERSION | cut -d= -f2)
@@ -57,8 +70,7 @@ CHECK_DOMAINPATH
     # retrieve and extract SeedDMS_Core tarball
     source_url=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Core-$SEEDDMS_VERSION.tgz/download
     tarball=/tmp/SeedDMS_Core-$SEEDDMS_VERSION.tgz
-    sudo curl -L $source_url > $tarball \
-        || ynh_die "Unable to download SeedDMS_Core tarball"
+    sudo curl -L $source_url > $tarball || ynh_die "Unable to download SeedDMS_Core tarball"
 
     src_checksum=$(cat ../conf/app.src | grep CORE_SOURCE_SUM | cut -d= -f2)
     echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
@@ -66,8 +78,7 @@ CHECK_DOMAINPATH
     # retrieve and extract SeddDMS_Lucene tarball
     source_url=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Lucene-$LUCENE_VERSION.tgz/download
     tarball=/tmp/SeedDMS_Lucene-${LUCENE_VERSION}.tgz
-    sudo curl -L $source_url > $tarball \
-        || ynh_die "Unable to download SeedDMS_Lucene tarball"
+    sudo curl -L $source_url > $tarball || ynh_die "Unable to download SeedDMS_Lucene tarball"
 
     src_checksum=$(cat ../conf/app.src | grep LUCENE_SOURCE_SUM | cut -d= -f2)
     echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
@@ -75,11 +86,10 @@ CHECK_DOMAINPATH
     # retrieve and extract SeedDMS_Preview tarball
     source_url=https://sourceforge.net/projects/seeddms/files/seeddms-$SEEDDMS_VERSION/SeedDMS_Preview-$PREVIEW_VERSION.tgz/download
     tarball=/tmp/SeedDMS_Preview-$PREVIEW_VERSION.tgz
-    sudo curl -L $source_url > $tarball \
-        || ynh_die "Unable to download SeedDMS_Preview tarball"
+    sudo curl -L $source_url > $tarball || ynh_die "Unable to download SeedDMS_Preview tarball"
 
     src_checksum=$(cat ../conf/app.src | grep PREVIEW_SOURCE_SUM | cut -d= -f2)
-    echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
+    echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source" 1
 
     sudo tar xvzf /tmp/seeddms-$SEEDDMS_VERSION.tar.gz --directory $final_path/
 
@@ -113,6 +123,7 @@ CHECK_DOMAINPATH
     fi
     sudo rm /tmp/SeedDMS* /tmp/seeddms-$SEEDDMS_VERSION.tar.gz
 
+
 # Autoconfig
     application_file=$final_path/seeddms-$SEEDDMS_VERSION/conf/settings.xml
     sudo cp -a ../sources/settings.xml           $application_file
@@ -133,16 +144,16 @@ CHECK_DOMAINPATH
             ;;
         *)
             lang="en"
-            language=en_GB
+            language="en_GB"
     esac
     ynh_app_setting_set "$app" lang "$lang"
 
     # Define app's data directory
-    DATADIR="/home/yunohost.app/${app}/data"
     sudo sed -i "s@_LANG_@$language@g"          $application_file
+    sudo sed -i "s@_DAY_@$dayofweek@g"          $application_file
     sudo sed -i "s@_APPHTML_@$app@g"            $application_file
     sudo sed -i "s@_APPDIR_@$final_path@g"      $application_file
-    sudo sed -i "s@_DATADIR_@$final_path@g"     $application_file
+    sudo sed -i "s@_DATADIR_@$data_path@g"      $application_file
 
     sudo sed -i "s@_DBC_DBTYPE_@mysql@g"        $application_file
     sudo sed -i "s@_DBC_DBSERVER_@localhost@g"  $application_file
@@ -150,25 +161,25 @@ CHECK_DOMAINPATH
     sudo sed -i "s@_DBC_DBUSER_@$dbuser@g"      $application_file
     sudo sed -i "s@_DBC_DBPASS_@$dbpass@g"      $application_file
 
-# Set permissions to seeddms directory
+# Set permissions to seeddms directories
     sudo find $final_path/. -type d -exec chmod 755 {} \;
     sudo find $final_path/. -type f -exec chmod 644 {} \;
-    sudo chown -R www-data:www-data $final_path
+    sudo chown -R www-data:www-data $final_path $data_path
 
 # Install Nginx configuration file
     nginx_conf_file=/etc/nginx/conf.d/$domain.d/$app.conf
-    sudo cp ../conf/nginx.conf                   $nginx_conf_file
-    sudo sed -i "s@PATHTOCHANGE@$path@g"         $nginx_conf_file
-    sudo sed -i "s@ALIASTOCHANGE@$final_path@g"  $nginx_conf_file
-    sudo sed -i "s@NAMETOCHANGE@$app@g"          $nginx_conf_file
-    sudo chown root:                             $nginx_conf_file
-    sudo chmod 644                               $nginx_conf_file
+    sudo cp ../conf/nginx.conf                  $nginx_conf_file
+    sudo sed -i "s@PATHTOCHANGE@$path@g"        $nginx_conf_file
+    sudo sed -i "s@ALIASTOCHANGE@$final_path@g" $nginx_conf_file
+    sudo sed -i "s@NAMETOCHANGE@$app@g"         $nginx_conf_file
+    sudo chown root:                            $nginx_conf_file
+    sudo chmod 644                              $nginx_conf_file
 
     finalphpconf=/etc/php5/fpm/pool.d/$app.conf
-    sudo cp ../conf/php-fpm.conf        $finalphpconf
-    sudo sed -i "s@NAMETOCHANGE@$app@g" $finalphpconf
-    sudo chown root:                    $finalphpconf
-    sudo chmod 644                      $finalphpconf
+    sudo cp ../conf/php-fpm.conf                $finalphpconf
+    sudo sed -i "s@NAMETOCHANGE@$app@g"         $finalphpconf
+    sudo chown root:                            $finalphpconf
+    sudo chmod 644                              $finalphpconf
 
 # Make app public if necessary
     ynh_app_setting_set "$app" is_public "$is_public"
