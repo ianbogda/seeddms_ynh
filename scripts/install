@@ -119,7 +119,7 @@ CHECK_DOMAINPATH
     sudo cp -a ../sources/create_tables-innodb.sql \
     	$final_path/seeddms-$SEEDDMS_VERSION/install/create_tables-innodb.sql
 
-    sudo touch $final_path/$SEEDDMS_VERSION/conf/ENABLE_INSTALL_TOOL
+    sudo touch $final_path/seeddms-$SEEDDMS_VERSION/conf/ENABLE_INSTALL_TOOL
 
     # Set lang => define from install manifest
     case "$lang" in
