@@ -83,13 +83,34 @@ CHECK_DOMAINPATH
     echo "$src_checksum $tarball" | md5sum -c --status || ynh_die "Corrupt source"
 
     sudo tar xvzf /tmp/seeddms-$SEEDDMS_VERSION.tar.gz --directory $final_path/www
-    sudo pear install /tmp/SeedDMS_Core-$SEEDDMS_VERSION.tgz
-    sudo pear install /tmp/SeedDMS_Lucene-$LUCENE_VERSION.tgz
-    sudo pear install /tmp/SeedDMS_Preview-$PREVIEW_VERSION.tgz
-    sudo pear install Log
-    sudo pear channel-discover pear.dotkernel.com/zf1/svn
-    sudo pear install zend/zend
-    sudo pear install HTTP_WebDAV_Server-1.0.0RC8
+    if [! $(pear list | grep SeedDMS_Core) ]
+    then
+        sudo pear install /tmp/SeedDMS_Core-$SEEDDMS_VERSION.tgz
+	fi
+    if [! $(pear list | grep SeedDMS_Lucene) ]
+    then
+        sudo pear install /tmp/SeedDMS_Lucene-$LUCENE_VERSION.tgz
+	fi
+    if [! $(pear list | grep SeedDMS_Preview) ]
+    then
+        sudo pear install /tmp/SeedDMS_Preview-$PREVIEW_VERSION.tgz
+    fi
+    if [! $(pear list | grep Log) ]
+    then
+        sudo pear install Log
+	fi
+    if [! $(pear list -c | grep Zend) ]
+    then
+        sudo pear channel-discover pear.dotkernel.com/zf1/svn
+	fi
+    if [! $(pear list | grep Zend) ]
+    then
+        sudo pear install zend/zend
+	fi
+    if [! $(pear list | grep HTTP_WebDAV_Server) ]
+    then
+        sudo pear install HTTP_WebDAV_Server-1.0.0RC8
+	fi
     sudo rm /tmp/SeedDMS* /tmp/seeddms-$SEEDDMS_VERSION.tar.gz
 
 # Autoconfig
